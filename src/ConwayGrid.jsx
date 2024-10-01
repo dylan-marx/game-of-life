@@ -37,7 +37,30 @@ function ConwayGrid() {
 
         return numNeighbours;
     }
-  
+    
+    // Determines if a cell is alive or dead
+    let updateCell = (x, y) => {
+        let numNeighbours = getNumNeighbours(x, y);
+        let currentState = grid[y][x];
+
+        if (currentState == 1) {
+            if (numNeighbours < 2) {
+                return 0;
+            }
+            if (numNeighbours >= 2 && numNeighbours < 4) {
+                return 1;
+            }
+            if (numNeighbours >= 4) {
+                return 0;
+            }
+        } else {
+            if (numNeighbours == 3) {
+                return 1;
+            }
+        }
+
+        return currentState;
+    }
     let [grid, setGrid] = useState(() => createEmptyGrid());
   
     return (
