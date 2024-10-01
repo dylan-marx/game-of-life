@@ -18,28 +18,36 @@ function ConwayGrid() {
       return grid;
     }
 
+    let [grid, setGrid] = useState(() => createEmptyGrid());
+
     // Counts a cells live neighbours
     let getNumNeighbours = (x, y) => {
-        let operations = [-1, 0, 1];
         let numNeighbours = 0;
+        let operations = [-1, 0, 1]; // To represent relative positions
 
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
+                 // Skip current cell
+                
+                const newX = x + operations[j];
+                const newY = y + operations[i];
+                if (newX === x && newY === y) continue;
 
-                // Does not check if current cell is alive or dead
-                if (i == j && i != 0 && (y+i) >= 0 && (x+j) >= 0 && (y+i) < NUM_ROWS && (x+j) < NUM_COLS) {
-                    if (grid[y + i][x + j] == 1) {
-                        numNeighbours = numNeighbours + 1;
+                // Ensure we're within bounds of the grid
+                if (newX >= 0 && newY >= 0 && newX < NUM_COLS && newY < NUM_ROWS) {
+                    if (grid[newY][newX] === 1) {
+                        numNeighbours++;
                     }
                 }
-            }
-        }
+            };
+        };
 
         return numNeighbours;
-    }
+    };
     
     // Determines if a cell is alive or dead
     let updateCell = (x, y) => {
+
         let numNeighbours = getNumNeighbours(x, y);
         let currentState = grid[y][x];
 
@@ -60,11 +68,26 @@ function ConwayGrid() {
         }
 
         return currentState;
-    }
-    let [grid, setGrid] = useState(() => createEmptyGrid());
+    };
+
+    // Moves the entire grid one generation forward
+    let updateGrid = () => {
+        let gridCopy = grid.map(subArray => subArray.slice());
+
+        for (let y = 0; y < NUM_ROWS; y++) {
+            for (let x = 0; x < NUM_COLS; x++) {
+                let newState = updateCell(x, y);
+                gridCopy[y][x] = newState;
+            }
+        }
+        console.log("New grid state:", gridCopy);
+        setGrid(gridCopy);
+    };
   
     return (
-      <div style={{display: 'grid', gridTemplateColumns: `repeat(${NUM_COLS}, 20px)`}}>
+    <>
+    <button onClick={() => updateGrid()}>RUN</button>
+    <div style={{display: 'grid', gridTemplateColumns: `repeat(${NUM_COLS}, 20px)`}}>
         {
           grid.map((rows, i) => 
             rows.map((col, j) =>
@@ -89,6 +112,7 @@ function ConwayGrid() {
           )
         }
       </div>
+    </>
     )
 }
 
