@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 
-function ConwayGrid() {
+function ConwayGrid({rows, cols, speed}) {
     // TODO Calculate based on screen size
-    const NUM_ROWS = 25;
-    const NUM_COLS = 50;
-    
+    const NUM_ROWS = rows;
+    const NUM_COLS = cols;
+    const SPEED = speed;
+
     // Creates an empty grid
     let createEmptyGrid = () => {
       let grid = [];
@@ -27,7 +28,7 @@ function ConwayGrid() {
         if (running) {
             interval = setInterval(() => {
                 updateGrid(grid); // Call updateGrid directly
-            }, 100);
+            }, SPEED);
         }
 
         return () => {
@@ -51,7 +52,7 @@ function ConwayGrid() {
                 const newY = y + operations[i];
                 if (newX === x && newY === y) continue;
 
-                // Ensure we're within bounds of the grid
+                // Ensure we"re within bounds of the grid
                 if (newX >= 0 && newY >= 0 && newX < NUM_COLS && newY < NUM_ROWS) {
                     if (grid[newY][newX] === 1) {
                         numNeighbours++;
@@ -102,39 +103,42 @@ function ConwayGrid() {
     };
 
     return (
-    <>
-    <div id = "controls">
-        <button onClick={() => setGrid(() => createEmptyGrid())}>Clear</button>
-        <button id="one-gen" onClick={() => updateGrid(grid)}>RUN</button>
-        <button onClick={() => setRunning(prev => !prev)}>{running ? "Stop" : "Start"}</button>
-    </div>
-    
-    <div style={{display: 'grid', gridTemplateColumns: `repeat(${NUM_COLS}, 20px)`}}>
-        {
-          grid.map((rows, i) => 
-            rows.map((col, j) =>
-                <div
-                    key={`${i}-${j}`}
-                    style={{width: 20, height: 20, backgroundColor: grid[i][j] ? 'black': undefined, border: 'solid 0.5px'} }
-                    onClick={() => {
-                        let gridCopy = grid.map(subArray => subArray.slice());
+    <div className="conway-grid">
+        <div id = "controls">
+            <button onClick={() => setRunning(prev => !prev)}>{running ? "Stop" : "Start"}</button>
+            <button id="one-gen" onClick={() => updateGrid(grid)}>Next</button>
+            <button onClick={() => setGrid(() => createEmptyGrid())}>Clear</button>
+            
+            
+        </div>
+        
+        <div className="grid" style={{display: "grid", gridTemplateColumns: `repeat(${NUM_COLS}, 20px)`}}>
+            {
+            grid.map((rows, i) => 
+                rows.map((col, j) =>
+                    <div
+                        className="cell"
+                        key={`${i}-${j}`}
+                        style={{width: 20, height: 20, backgroundColor: grid[i][j] ? "black": undefined} }
+                        onClick={() => {
+                            let gridCopy = grid.map(subArray => subArray.slice());
 
-                        if (gridCopy[i][j] == 0) {
-                            gridCopy[i][j] = 1; 
-                        } else {
-                            gridCopy[i][j] = 0;
-                        }
+                            if (gridCopy[i][j] == 0) {
+                                gridCopy[i][j] = 1; 
+                            } else {
+                                gridCopy[i][j] = 0;
+                            }
 
-                        setGrid(gridCopy);
-                    }}
-                >
+                            setGrid(gridCopy);
+                        }}
+                    >
 
-              </div>
+                </div>
+                )
             )
-          )
-        }
-      </div>
-    </>
+            }
+        </div>
+    </div>
     )
 }
 
