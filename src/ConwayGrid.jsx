@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 function ConwayGrid() {
     // TODO Calculate based on screen size
@@ -19,6 +19,24 @@ function ConwayGrid() {
     }
 
     let [grid, setGrid] = useState(() => createEmptyGrid());
+    let [running, setRunning] = useState(false);
+
+    useEffect(() => {
+        let interval;
+
+        if (running) {
+            interval = setInterval(() => {
+                updateGrid(grid); // Call updateGrid directly
+            }, 100);
+        }
+
+        return () => {
+            if (interval) {
+                clearInterval(interval);
+            }
+        };
+    }, [running, grid]);
+
 
     // Counts a cells live neighbours
     let getNumNeighbours = (x, y) => {
@@ -71,8 +89,8 @@ function ConwayGrid() {
     };
 
     // Moves the entire grid one generation forward
-    let updateGrid = () => {
-        let gridCopy = grid.map(subArray => subArray.slice());
+    let updateGrid = (currentGrid) => {
+        let gridCopy = currentGrid.map(subArray => subArray.slice());
 
         for (let y = 0; y < NUM_ROWS; y++) {
             for (let x = 0; x < NUM_COLS; x++) {
@@ -80,13 +98,17 @@ function ConwayGrid() {
                 gridCopy[y][x] = newState;
             }
         }
-        console.log("New grid state:", gridCopy);
         setGrid(gridCopy);
     };
-  
+
     return (
     <>
-    <button onClick={() => updateGrid()}>RUN</button>
+    <div id = "controls">
+        <button onClick={() => setGrid(() => createEmptyGrid())}>Clear</button>
+        <button id="one-gen" onClick={() => updateGrid(grid)}>RUN</button>
+        <button onClick={() => setRunning(prev => !prev)}>{running ? "Stop" : "Start"}</button>
+    </div>
+    
     <div style={{display: 'grid', gridTemplateColumns: `repeat(${NUM_COLS}, 20px)`}}>
         {
           grid.map((rows, i) => 
