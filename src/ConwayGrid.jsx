@@ -1,17 +1,12 @@
 import { useState, useEffect } from "react";
 
 function ConwayGrid({rows, cols, speed}) {
-    // TODO Calculate based on screen size
-    const NUM_ROWS = rows;
-    const NUM_COLS = cols;
-    const SPEED = speed;
-
     // Creates an empty grid
     let createEmptyGrid = () => {
       let grid = [];
-      for (let y = 0; y < NUM_ROWS; y++) {
+      for (let y = 0; y < rows; y++) {
         grid[y] = [];
-        for (let x = 0; x < NUM_COLS; x++) {
+        for (let x = 0; x < cols; x++) {
           grid[y][x] = 0;
         }
       }
@@ -19,16 +14,31 @@ function ConwayGrid({rows, cols, speed}) {
       return grid;
     }
 
+    let createGrid = (newRows, newCols) => {
+        const newGrid = Array.from({ length: newRows }, (_, rowIndex) =>
+            Array.from({ length: newCols }, (_, colIndex) =>
+              // If the cell exists in the old grid, retain its value; otherwise, set to 0
+              grid[rowIndex]?.[colIndex] ?? 0
+            )
+          );
+        return newGrid; 
+    }
+
     let [grid, setGrid] = useState(() => createEmptyGrid());
     let [running, setRunning] = useState(false);
+
+    useEffect(() => {
+        const newGrid = createGrid(rows, cols);
+        setGrid(createEmptyGrid());
+    }, [rows, cols]);
 
     useEffect(() => {
         let interval;
 
         if (running) {
             interval = setInterval(() => {
-                updateGrid(grid); // Call updateGrid directly
-            }, SPEED);
+                updateGrid(grid);
+            }, speed);
         }
 
         return () => {
@@ -53,7 +63,7 @@ function ConwayGrid({rows, cols, speed}) {
                 if (newX === x && newY === y) continue;
 
                 // Ensure we"re within bounds of the grid
-                if (newX >= 0 && newY >= 0 && newX < NUM_COLS && newY < NUM_ROWS) {
+                if (newX >= 0 && newY >= 0 && newX < cols && newY < rows) {
                     if (grid[newY][newX] === 1) {
                         numNeighbours++;
                     }
@@ -93,8 +103,8 @@ function ConwayGrid({rows, cols, speed}) {
     let updateGrid = (currentGrid) => {
         let gridCopy = currentGrid.map(subArray => subArray.slice());
 
-        for (let y = 0; y < NUM_ROWS; y++) {
-            for (let x = 0; x < NUM_COLS; x++) {
+        for (let y = 0; y < rows; y++) {
+            for (let x = 0; x < cols; x++) {
                 let newState = updateCell(x, y);
                 gridCopy[y][x] = newState;
             }
@@ -107,12 +117,12 @@ function ConwayGrid({rows, cols, speed}) {
         <div id = "controls">
             <button onClick={() => setRunning(prev => !prev)}>{running ? "Stop" : "Start"}</button>
             <button id="one-gen" onClick={() => updateGrid(grid)}>Next</button>
-            <button onClick={() => setGrid(() => createEmptyGrid())}>Clear</button>
+            <button id="clear-grid" onClick={() => setGrid(() => createEmptyGrid())}>Clear</button>
             
             
         </div>
         
-        <div className="grid" style={{display: "grid", gridTemplateColumns: `repeat(${NUM_COLS}, 20px)`}}>
+        <div id ="grid" className="grid" style={{display: "grid", gridTemplateColumns: `repeat(${cols}, 20px)`}}>
             {
             grid.map((rows, i) => 
                 rows.map((col, j) =>
