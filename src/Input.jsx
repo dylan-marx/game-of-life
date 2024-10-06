@@ -15,7 +15,15 @@ function Input({ setRows, setCols, setSpeed }) {
             
             <label>Speed:</label>
             <div className="radio-container" style={{marginBottom:"8px"}}>
-                
+            <label htmlFor="100-speed">
+                    <input type="radio" id="25-speed" name="speed" value="25" checked={speed === 25}
+                        onChange={(e) => {
+                            setSpeed(Number(e.target.value));
+                            setLocalSpeed(Number(e.target.value));
+                        }}
+                    />
+                    Very Fast
+                </label>
                 <label htmlFor="100-speed">
                     <input type="radio" id="100-speed" name="speed" value="100" checked={speed === 100}
                         onChange={(e) => {
