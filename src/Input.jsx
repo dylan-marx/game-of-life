@@ -7,7 +7,7 @@ function Input({ setRows, setCols, setSpeed }) {
 
     return (
         <div className="input-form">
-            <h2>Inputs for grid</h2>
+            <h2>Inputs</h2>
             <label>Rows:</label>
             <input type="number" id="num-rows" defaultValue={20} onChange={(e) => {setRows(e.target.value)}}></input>
             <label>Columns:</label>

@@ -1,11 +1,12 @@
 # Conway's Game of Life
 
-This is a simple implementation of the Conway's Game of Life using React.
+Conway's Game of Life is a zero-player game where cells live or die based on an initial state and a set of simple rules. This project implements these rules using React.
 
 ## Table of Contents
 
-1. Setup
-2. Rules of Life
+1. [Setup](#setup)
+2. [Rules of life](#rules-of-life)
+
 
 ## Setup
 
@@ -14,6 +15,7 @@ This is a simple implementation of the Conway's Game of Life using React.
 3. Install the required dependencies: `npm install`.
 4. Start the development server: `npm run dev`.
 5. Open your browser and navigate to the specified address.
+
 
 ## Rules of Life
 

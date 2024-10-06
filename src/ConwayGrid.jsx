@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-function ConwayGrid({rows, cols, speed}) {
+function ConwayGrid({rows, cols, speed, setLiveCells, setGeneration}) {
     // Creates an empty grid
     let createEmptyGrid = () => {
       let grid = [];
@@ -14,24 +14,40 @@ function ConwayGrid({rows, cols, speed}) {
       return grid;
     }
 
+    // Creates a new grid with a set number of columns and rows
+
     let createGrid = (newRows, newCols) => {
-        const newGrid = Array.from({ length: newRows }, (_, rowIndex) =>
-            Array.from({ length: newCols }, (_, colIndex) =>
-              // If the cell exists in the old grid, retain its value; otherwise, set to 0
-              grid[rowIndex]?.[colIndex] ?? 0
-            )
-          );
-        return newGrid; 
+        let newGrid = [];
+        for (let y = 0; y < newRows; y++) {
+            newGrid[y] = [];
+            for (let x = 0; x < newCols; x++) {
+                if (grid[y] && grid[y][x] !== undefined) {
+                    newGrid[y][x] = grid[y][x];
+                } else {
+                    newGrid[y][x] = 0;
+                }
+                
+            }
+        }
+    
+        return newGrid;
     }
 
     let [grid, setGrid] = useState(() => createEmptyGrid());
     let [running, setRunning] = useState(false);
+    let [localLiveCells, setLocalLiveCells] = useState(0);
+    let [localGeneration, setLocalGeneration] = useState(1);
 
     // If the rows or cols change updates the grid size
     useEffect(() => {
         const newGrid = createGrid(rows, cols);
-        setGrid(createEmptyGrid());
+        setGrid(newGrid);
     }, [rows, cols]);
+
+    useEffect(() => {
+        setGeneration(localGeneration);
+        setLiveCells(localLiveCells);
+    }, [localGeneration, localLiveCells, setLocalLiveCells, setLocalGeneration]);
 
     // Updates the grid every few seconds
     useEffect(() => {
@@ -108,22 +124,31 @@ function ConwayGrid({rows, cols, speed}) {
     let updateGrid = (currentGrid) => {
         // Used to store cell states after their status is determined
         let gridCopy = currentGrid.map(subArray => subArray.slice());
-
+        let newLiveCells = 0;
         for (let y = 0; y < rows; y++) {
             for (let x = 0; x < cols; x++) {
                 let newState = updateCell(x, y);
                 gridCopy[y][x] = newState;
+                if (newState == 1) {
+                    newLiveCells = newLiveCells + 1;
+                }
             }
         }
+        setLocalLiveCells(newLiveCells);
+        setLocalGeneration((prevGeneration) => prevGeneration + 1);
         setGrid(gridCopy);
     };
 
     return (
     <div className="conway-grid">
         <div id = "controls">
-            <button onClick={() => setRunning(prev => !prev)}>{running ? "Stop" : "Start"}</button>
+            <button onClick={() => setRunning(prev => !prev)}>{running ? "Stop!" : "Start"}</button>
             <button id="one-gen" onClick={() => updateGrid(grid)}>Next</button>
-            <button id="clear-grid" onClick={() => setGrid(() => createEmptyGrid())}>Clear</button>
+            <button id="clear-grid" onClick={() => {
+                setLocalGeneration(1);
+                setLiveCells(0);
+                setGrid(() => createEmptyGrid());}}
+            >Clear</button>
         </div>
         
         <div id ="grid" className="grid" style={{display: "grid", gridTemplateColumns: `repeat(${cols}, 20px)`}}>
@@ -131,7 +156,7 @@ function ConwayGrid({rows, cols, speed}) {
             grid.map((rows, i) => 
                 rows.map((col, j) =>
                     <div
-                        className="cell"
+                        className={`cell ${grid[i][j] ? "alive": "dead"}`}
                         key={`${i}-${j}`}
                         style={{width: 20, height: 20, backgroundColor: grid[i][j] ? "black": undefined} }
                         onClick={() => {
