@@ -146,7 +146,7 @@ function ConwayGrid({rows, cols, speed, setLiveCells, setGeneration}) {
             <button id="one-gen" onClick={() => updateGrid(grid)}>Next</button>
             <button id="clear-grid" onClick={() => {
                 setLocalGeneration(1);
-                setLiveCells(0);
+                setLocalLiveCells(0);
                 setGrid(() => createEmptyGrid());}}
             >Clear</button>
         </div>
@@ -158,7 +158,7 @@ function ConwayGrid({rows, cols, speed, setLiveCells, setGeneration}) {
                     <div
                         className={`cell ${grid[i][j] ? "alive": "dead"}`}
                         key={`${i}-${j}`}
-                        style={{width: 20, height: 20, backgroundColor: grid[i][j] ? "black": undefined} }
+                        style={{width: 20, height: 20} }
                         onClick={() => {
                             let gridCopy = grid.map(subArray => subArray.slice());
 

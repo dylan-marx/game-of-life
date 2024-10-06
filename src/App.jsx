@@ -12,7 +12,7 @@ function App() {
   let [generation, setGeneration] = useState(0);
 
   return (
-    <div>
+    <div className="app">
       <div className="heading">
         <h1>Conway's Game of Life</h1>
       </div>
