@@ -27,11 +27,13 @@ function ConwayGrid({rows, cols, speed}) {
     let [grid, setGrid] = useState(() => createEmptyGrid());
     let [running, setRunning] = useState(false);
 
+    // If the rows or cols change updates the grid size
     useEffect(() => {
         const newGrid = createGrid(rows, cols);
         setGrid(createEmptyGrid());
     }, [rows, cols]);
 
+    // Updates the grid every few seconds
     useEffect(() => {
         let interval;
 
@@ -56,10 +58,9 @@ function ConwayGrid({rows, cols, speed}) {
 
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
-                 // Skip current cell
-                
                 const newX = x + operations[j];
                 const newY = y + operations[i];
+                // Skip current cell
                 if (newX === x && newY === y) continue;
 
                 // Ensure we"re within bounds of the grid
@@ -81,16 +82,20 @@ function ConwayGrid({rows, cols, speed}) {
         let currentState = grid[y][x];
 
         if (currentState == 1) {
+            // Live cell dies by underpopulation
             if (numNeighbours < 2) {
                 return 0;
             }
+            // Live cell stays alive
             if (numNeighbours >= 2 && numNeighbours < 4) {
                 return 1;
             }
+            // Live cell dies by overpopulation
             if (numNeighbours >= 4) {
                 return 0;
             }
         } else {
+            // Dead cell become alive by reproduction
             if (numNeighbours == 3) {
                 return 1;
             }
@@ -101,6 +106,7 @@ function ConwayGrid({rows, cols, speed}) {
 
     // Moves the entire grid one generation forward
     let updateGrid = (currentGrid) => {
+        // Used to store cell states after their status is determined
         let gridCopy = currentGrid.map(subArray => subArray.slice());
 
         for (let y = 0; y < rows; y++) {
@@ -118,8 +124,6 @@ function ConwayGrid({rows, cols, speed}) {
             <button onClick={() => setRunning(prev => !prev)}>{running ? "Stop" : "Start"}</button>
             <button id="one-gen" onClick={() => updateGrid(grid)}>Next</button>
             <button id="clear-grid" onClick={() => setGrid(() => createEmptyGrid())}>Clear</button>
-            
-            
         </div>
         
         <div id ="grid" className="grid" style={{display: "grid", gridTemplateColumns: `repeat(${cols}, 20px)`}}>
