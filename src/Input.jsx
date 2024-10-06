@@ -1,8 +1,6 @@
 import { useState } from "react";
 
 function Input({ setRows, setCols, setSpeed }) {
-    const [rows, setLocalRows] = useState(20);
-    const [cols, setLocalCols] = useState(20);
     const [speed, setLocalSpeed] = useState(250);
 
     return (
